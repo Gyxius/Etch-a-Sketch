@@ -44,14 +44,45 @@ function createDiv(grid, size = 16) {
     }
 }
 
+function randomColor() {
+    /** 
+     * Create a random RGBA color
+     * @returns {string} color - a string with the following format rgb(R,G,B,A) values
+    */
+    const arrayColor = [Math.floor(Math.random() * 255),Math.floor(Math.random() * 255),Math.floor(Math.random() * 255)];
+
+    return `rgba(${arrayColor[0]},${arrayColor[1]},${arrayColor[2]},.1)`;
+}
+
 let gridDiv = createGrid();
 createDiv(gridDiv);
 
 // Grid divs change color when the mouse passes over them
-contentDiv.addEventListener("mouseover", (event) => event.target.style.backgroundColor = "black");
+contentDiv.addEventListener("mouseover", (event) => {
+    /** 
+     * if color is default aka white then creates a random RGB color,
+     * if not then increase alpha for RGBA color by 0.1 
+    */
+    let color = event.target.style.backgroundColor;
+    if (color === "white") {
+        event.target.style.backgroundColor = randomColor();
+    }
+    else {
+        let alphaColor = parseFloat(color.slice(-3,-1));
+        let alphaIncrease = alphaColor >= 0.9 ? 0.0: 0.1;
+        alphaColor += alphaIncrease;
+        let newColor = color.slice(0,-3) + alphaColor + ')';
+        event.target.style.backgroundColor = newColor;
+    }
+});
 
 button.addEventListener("click", () => {
-    const userInput = prompt("How many squares per side?");
+    // Allows the user to edit the grid size
+    const promptInput = prompt("How many squares per side?");
+    // If prompt inpuy is empy or > 100 then default to 16
+    let userInput = promptInput ? promptInput : 16;
+    userInput = userInput < 100 ? userInput : 16;
+
     contentDiv.innerHTML = '';
     gridDiv = createGrid(userInput);
     createDiv(gridDiv, userInput);
